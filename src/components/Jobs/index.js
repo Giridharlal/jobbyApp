@@ -2,8 +2,10 @@ import {Component} from 'react'
 import {Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import {BsSearch} from 'react-icons/bs'
+import {FaStar} from 'react-icons/fa'
 import Loader from 'react-loader-spinner'
 import Header from '../Header'
+import './index.css'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -11,6 +13,14 @@ const apiStatusConstants = {
   failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
 }
+
+const locations = [
+  {place: 'Hyderabad'},
+  {place: 'Bangalore'},
+  {place: 'Chennai'},
+  {place: 'Delhi'},
+  {place: 'Mumbai'},
+]
 
 const salaryRangesList = [
   {
@@ -58,6 +68,7 @@ class Jobs extends Component {
     selectedEmploymentTypesList: [],
     selectedSalaryRange: 1000000,
     searchInput: '',
+    selectedLocations: [],
   }
 
   componentDidMount() {
@@ -89,7 +100,7 @@ class Jobs extends Component {
   }
 
   handleSearchInputChange = event => {
-    const value = event.target.value
+    const {value} = event.target
     this.setState({searchInput: value})
   }
 
@@ -104,8 +115,13 @@ class Jobs extends Component {
   }
 
   getJobs = async () => {
-    const {selectedEmploymentTypesList, selectedSalaryRange, searchInput} =
-      this.state
+    const {
+      selectedEmploymentTypesList,
+      selectedSalaryRange,
+      searchInput,
+      apiStatus,
+      selectedLocations,
+    } = this.state
     const employmentType = selectedEmploymentTypesList
       .map(type => type.toUpperCase())
       .join(',')
@@ -117,7 +133,7 @@ class Jobs extends Component {
     })
     const jwtToken = Cookies.get('jwt_token')
     const apiUrl = `https://apis.ccbp.in/jobs?employment_type=${employmentType}&minimum_package=${selectedSalaryRange}&search=${searchInput}`
-    console.log(apiUrl)
+    console.log(apiUrl, 'apiurl')
 
     const options = {
       headers: {
@@ -137,9 +153,17 @@ class Jobs extends Component {
         location: job.location,
         packagePerAnnum: job.package_per_annum,
         description: job.job_description,
+        rating: job.rating,
       }))
+      const filteredJobList =
+        Array.isArray(selectedLocations) && selectedLocations.length > 0
+          ? updatedJobList.filter(job =>
+              selectedLocations.includes(job.location),
+            )
+          : updatedJobList
+
       this.setState({
-        jobList: updatedJobList,
+        jobList: filteredJobList,
         apiStatus: apiStatusConstants.success,
       })
     } else {
@@ -147,7 +171,7 @@ class Jobs extends Component {
         apiStatus: apiStatusConstants.failure,
       })
     }
-    console.log(this.state.apiStatus)
+    console.log(apiStatus)
   }
 
   getProfileDetails = async () => {
@@ -181,7 +205,7 @@ class Jobs extends Component {
       />
       <h1 className="jobs-failure-heading-text">Oops! Something Went Wrong</h1>
       <p className="jobs-failure-description">
-        We are having some trouble processing your request. Please try again.
+        We cannot seem to find the page you are looking for
       </p>
     </div>
   )
@@ -194,6 +218,7 @@ class Jobs extends Component {
 
   renderJobsListView = () => {
     const {jobList, searchInput} = this.state
+    console.log(jobList)
 
     return (
       <div>
@@ -220,11 +245,14 @@ class Jobs extends Component {
                   <Link to={`/jobs/${job.id}`}>
                     <img
                       src={job.companyLogoUrl}
-                      alt="company logo"
+                      alt="job details company logo"
                       className="company-logo"
                     />
                     <div>
                       <h2 className="job-title">{job.title}</h2>
+                      <p>
+                        <FaStar /> {job.rating}
+                      </p>
                       <p className="job-location">{job.location}</p>
                       <p className="job-employment-type">
                         {job.employmentType}
@@ -269,6 +297,7 @@ class Jobs extends Component {
 
   renderEmpolymentType = () => (
     <div>
+      <h1>Type of Employment</h1>
       <ul>
         {employmentTypesList.map(employment => (
           <li
@@ -318,28 +347,73 @@ class Jobs extends Component {
     )
   }
 
+  handleLocations = (event, place) => {
+    const {selectedLocations} = this.state
+    if (event.target.checked) {
+      this.setState(
+        {selectedLocations: [...selectedLocations, place]},
+        this.getJobs, // To trigger job filtering after updating state
+      )
+    } else {
+      this.setState(
+        {
+          selectedLocations: selectedLocations.filter(loc => loc !== place),
+        },
+        this.getJobs,
+      )
+    }
+  }
+
+  renderLoctions = () => {
+    const {selectedLocations} = this.state
+    return (
+      <div>
+        <h1>Locations</h1>
+        <ul>
+          {locations.map(location => (
+            <li key={location.place} className="salary-type-item">
+              <label>
+                <input
+                  type="checkbox"
+                  value={location.place}
+                  checked={selectedLocations.includes(location.place)}
+                  onChange={e => this.handleLocations(e, location.place)}
+                />
+                {location.place}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
   render() {
     const {profileDetails} = this.state
     return (
       <div className="jobs-container">
         <Header />
-        <div>
-          {profileDetails.length === 0 ? (
-            <button onClick={this.getProfileDetails}>Retry</button>
-          ) : (
-            <div>
-              <img src={profileDetails.profileImageUrl} alt="profile" />
-              <h1>{profileDetails.name}</h1>
-              <p>{profileDetails.shortBio}</p>
+        <div className="container">
+          <div className="side-bar">
+            <div className="sticky-sidebar">
+              {profileDetails.length === 0 ? (
+                <button onClick={this.getProfileDetails}>Retry</button>
+              ) : (
+                <div>
+                  <img src={profileDetails.profileImageUrl} alt="profile" />
+                  <h1>{profileDetails.name}</h1>
+                  <p>{profileDetails.shortBio}</p>
+                </div>
+              )}
+              <div>
+                {this.renderEmpolymentType()}
+                {this.renderSalaryRanges()}
+                {this.renderLoctions()}
+              </div>
             </div>
-          )}
-          <div>
-            <h1>Type of Employment</h1>
-            {this.renderEmpolymentType()}
-            {this.renderSalaryRanges()}
           </div>
+          <div>{this.renderAllJobs()}</div>
         </div>
-        {this.renderAllJobs()}
       </div>
     )
   }

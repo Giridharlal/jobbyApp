@@ -1,5 +1,6 @@
 import {Link, withRouter, useHistory} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import './index.css'
 
 const Header = () => {
   const history = useHistory()
@@ -9,27 +10,29 @@ const Header = () => {
   }
 
   return (
-    <nav className="header">
-      <Link to="/">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
-          alt="website logo"
-        />
-      </Link>
-      <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/jobs">Jobs</Link>
-        </li>
-        <li>
-          <button type="button" onClick={onLogout}>
-            Logout
-          </button>
-        </li>
-      </ul>
-    </nav>
+    <div className="header">
+      <nav className="sticky-header">
+        <Link to="/">
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/logo-img.png"
+            alt="website logo"
+          />
+        </Link>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/jobs">Jobs</Link>
+          </li>
+          <li>
+            <button type="button" onClick={onLogout}>
+              Logout
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
   )
 }
 

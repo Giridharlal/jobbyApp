@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.side-bar {
+  width: 600px; /* Adjust width as needed */
+  height: 100vh; /* Ensures it takes full viewport height */
+}
+
+.sticky-sidebar {
+  position: sticky;
+  top: 0; /* Keeps it at the top */
+  background-color: white;
+  padding: 10px;
+  z-index: 100;
+}

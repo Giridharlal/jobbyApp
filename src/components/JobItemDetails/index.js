@@ -2,8 +2,8 @@ import {useState} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import {FaStar} from 'react-icons/fa'
-import {useParams} from 'react-router-dom'
-import NotFound from '../NotFound'
+import {useParams, useHistory} from 'react-router-dom'
+import Header from '../Header'
 
 const JobItemDetails = () => {
   const {id} = useParams()
@@ -81,6 +81,11 @@ const JobItemDetails = () => {
     initializeFetch()
   }
 
+  const history = useHistory()
+  const handleRetry = () => {
+    history.replace('./')
+  }
+
   if (isLoading) {
     return (
       <div data-testid="loader" className="jobs-loader-container">
@@ -89,17 +94,31 @@ const JobItemDetails = () => {
     )
   }
   if (error) {
-    return <NotFound />
+    return (
+      <div>
+        <Header />
+        <div>
+          <img
+            src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+            alt="failure view"
+          />
+          <h1>Oops! Somthing went wrong</h1>
+          <p>We cannot seem to find the page you are looking for</p>
+          <button onClick={handleRetry}>retry</button>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div>
+      <Header />
       <h1>JOB ITEM DETAILS</h1>
       {jobDetails && (
         <div>
           <img
             src={jobDetails.companyLogoUrl}
-            alt="website logo"
+            alt="job details company logo"
             style={{width: '100px', height: '100px'}}
           />
           <a href={jobDetails.companyWebsiteURL}>Visit</a>
