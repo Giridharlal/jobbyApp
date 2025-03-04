@@ -66,7 +66,7 @@ class Jobs extends Component {
     apiStatus: apiStatusConstants.initial,
     profileDetails: [],
     selectedEmploymentTypesList: [],
-    selectedSalaryRange: 1000000,
+    selectedSalaryRange: '',
     searchInput: '',
     selectedLocations: [],
   }

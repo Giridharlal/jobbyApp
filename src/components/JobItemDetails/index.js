@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import {FaStar} from 'react-icons/fa'
@@ -15,6 +15,7 @@ const JobItemDetails = () => {
   const [error, setError] = useState(null)
 
   const initializeFetch = async () => {
+    setIsLoading(true)
     try {
       const jwtToken = Cookies.get('jwt_token')
       const options = {
@@ -77,13 +78,16 @@ const JobItemDetails = () => {
   }
 
   // Trigger fetch logic when the component renders
-  if (isLoading && !jobDetails && !error) {
-    initializeFetch()
-  }
+  // if (isLoading && !jobDetails && !error) {
+  //   initializeFetch()
+  // }
 
-  const history = useHistory()
+  useEffect(() => {
+    initializeFetch()
+  }, [id])
+
   const handleRetry = () => {
-    history.replace('./')
+    initializeFetch()
   }
 
   if (isLoading) {
@@ -102,7 +106,7 @@ const JobItemDetails = () => {
             src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
             alt="failure view"
           />
-          <h1>Oops! Somthing went wrong</h1>
+          <h1>Oops! Something went wrong</h1>
           <p>We cannot seem to find the page you are looking for</p>
           <button onClick={handleRetry}>retry</button>
         </div>
