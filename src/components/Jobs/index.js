@@ -196,6 +196,10 @@ class Jobs extends Component {
     }
   }
 
+  handleJobRetry = () => {
+    this.getJobs()
+  }
+
   renderFailureView = () => (
     <div className="jobs-error-view-container">
       <img
@@ -207,6 +211,7 @@ class Jobs extends Component {
       <p className="jobs-failure-description">
         We cannot seem to find the page you are looking for
       </p>
+      <button onClick={this.handleJobRetry}>Retry</button>
     </div>
   )
 
@@ -217,65 +222,46 @@ class Jobs extends Component {
   )
 
   renderJobsListView = () => {
-    const {jobList, searchInput} = this.state
+    const {jobList} = this.state
     console.log(jobList)
 
     return (
       <div>
-        <input
-          type="search"
-          value={searchInput}
-          onChange={this.handleSearchInputChange}
-          placeholder="search for jobs"
-          className="search-input"
-          onKeyPress={this.handleKeyPress}
-        />
-        <button
-          type="button"
-          onClick={this.handleSearch}
-          data-testid="searchButton"
-        >
-          <BsSearch className="search-icon" />
-        </button>
-        <div>
-          {jobList.length !== 0 ? (
-            <ul className="jobs-list">
-              {jobList.map(job => (
-                <li key={job.id} className="job-item">
-                  <Link to={`/jobs/${job.id}`}>
-                    <img
-                      src={job.companyLogoUrl}
-                      alt="job details company logo"
-                      className="company-logo"
-                    />
-                    <div>
-                      <h2 className="job-title">{job.title}</h2>
-                      <p>
-                        <FaStar /> {job.rating}
-                      </p>
-                      <p className="job-location">{job.location}</p>
-                      <p className="job-employment-type">
-                        {job.employmentType}
-                      </p>
-                      <p className="job-package">{job.packagePerAnnum}</p>
-                      <h2>Description</h2>
-                      <p>{job.description}</p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>
-              <img
-                src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
-                alt="no jobs"
-              />
-              <h1>No Jobs Found</h1>
-              <p>We could not find any jobs. Try other filters</p>
-            </div>
-          )}
-        </div>
+        {jobList.length !== 0 ? (
+          <ul className="jobs-list">
+            {jobList.map(job => (
+              <li key={job.id} className="job-item">
+                <Link to={`/jobs/${job.id}`}>
+                  <img
+                    src={job.companyLogoUrl}
+                    alt="job details company logo"
+                    className="company-logo"
+                  />
+                  <div>
+                    <h2 className="job-title">{job.title}</h2>
+                    <p>
+                      <FaStar /> {job.rating}
+                    </p>
+                    <p className="job-location">{job.location}</p>
+                    <p className="job-employment-type">{job.employmentType}</p>
+                    <p className="job-package">{job.packagePerAnnum}</p>
+                    <h2>Description</h2>
+                    <p>{job.description}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div>
+            <img
+              src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
+              alt="no jobs"
+            />
+            <h1>No Jobs Found</h1>
+            <p>We could not find any jobs. Try other filters</p>
+          </div>
+        )}
       </div>
     )
   }
@@ -389,7 +375,7 @@ class Jobs extends Component {
   }
 
   render() {
-    const {profileDetails} = this.state
+    const {profileDetails, searchInput} = this.state
     return (
       <div className="jobs-container">
         <Header />
@@ -412,7 +398,24 @@ class Jobs extends Component {
               </div>
             </div>
           </div>
-          <div>{this.renderAllJobs()}</div>
+          <div>
+            <input
+              type="search"
+              value={searchInput}
+              onChange={this.handleSearchInputChange}
+              placeholder="search for jobs"
+              className="search-input"
+              onKeyPress={this.handleKeyPress}
+            />
+            <button
+              type="button"
+              onClick={this.handleSearch}
+              data-testid="searchButton"
+            >
+              <BsSearch className="search-icon" />
+            </button>
+            {this.renderAllJobs()}
+          </div>
         </div>
       </div>
     )
