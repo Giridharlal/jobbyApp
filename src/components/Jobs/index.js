@@ -196,10 +196,6 @@ class Jobs extends Component {
     }
   }
 
-  handleJobRetry = () => {
-    this.getJobs()
-  }
-
   renderFailureView = () => (
     <div className="jobs-error-view-container">
       <img
@@ -211,7 +207,7 @@ class Jobs extends Component {
       <p className="jobs-failure-description">
         We cannot seem to find the page you are looking for
       </p>
-      <button onClick={this.handleJobRetry}>Retry</button>
+      <button onClick={this.getJobs}>Retry</button>
     </div>
   )
 
@@ -259,7 +255,7 @@ class Jobs extends Component {
               alt="no jobs"
             />
             <h1>No Jobs Found</h1>
-            <p>We could not find any jobs. Try other filters</p>
+            <p>We could not find any jobs. Try other filters.</p>
           </div>
         )}
       </div>
